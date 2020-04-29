@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import AppHeader from '../app-header';
 import SearchPanel from '../search-panel';
@@ -8,26 +8,64 @@ import PostAddForm from '../post-add-form';
 
 import './app.css';
 
-const App = () => {
+export default class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [
+                { label: 'Going to learn React', important: true, id: 1 },
+                { label: 'That is good', important: false, id: 2 },
+                { label: 'I need break', important: false, id: 3 }
+            ]
 
-    const data = [
-        { label: 'Going to learn React', important: true, id:'aqsd' },
-        { label: 'That is good', important: false, id:'aqwesd' },
-        { label: 'I need break', important: false, id:'aqsewqd' }
-    ]
+        }
+        this.deleteItem = this.deleteItem.bind(this);
+        this.addItem = this.addItem.bind(this);
+        this.maxId = 4;
+    }
+
+    deleteItem(id) {
+        this.setState(({ data }) => {
+            const index = data.findIndex(elem => elem.id === id);
+            const newData = [...data.slice(0, index), ...data.slice(index + 1)];
+            return {
+                data: newData
+            }
 
 
-    return (
-        <div className="app">
-            <AppHeader />
-            <div className="search-panel d-flex">
-                <SearchPanel />
-                <PostStatusFilter />
+        });
+    }
+
+    addItem(text) {
+        const newElem = {
+            label: text, important: false, id: this.maxId++
+        }
+
+        this.setState(({ data }) => {
+            const newData = [...data, newElem];
+            return {
+                data: newData
+            }
+        })
+
+    }
+
+    render() {
+        return (
+            <div className="app">
+                <AppHeader />
+                <div className="search-panel d-flex">
+                    <SearchPanel />
+                    <PostStatusFilter />
+                </div>
+                <PostList posts={this.state.data}
+                    onDelete={this.deleteItem} />
+                <PostAddForm
+                    onAdd={this.addItem} />
             </div>
-            <PostList posts={data} />
-            <PostAddForm />
-        </div>
-    )
-}
+        )
 
-export default App;
+    }
+
+
+}
